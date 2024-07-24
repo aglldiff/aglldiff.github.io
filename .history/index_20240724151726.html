@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+    content="AGLLDiff: Guiding Diffusion Models Towards Unsupervised Training-free Real-world Low-light Image Enhancement">
+  <meta name="keywords" content="Low-light Image Enhancement, Diffusion Model, Training-free">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AGLLDiff: Guiding Diffusion Models Towards Unsupervised Training-free Real-world Low-light Image Enhancement</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <!-- <link rel="icon" href="./static/images/favicon.svg"> -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="./static/js/script.js"></script>
+
+  <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+</head>
+
+<body>
+
+  <!-- <nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://hypernerf.github.io">
+            HyperNeRF
+          </a>
+          <a class="navbar-item" href="https://nerfies.github.io">
+            Nerfies
+          </a>
+          <a class="navbar-item" href="https://latentfusion.github.io">
+            LatentFusion
+          </a>
+          <a class="navbar-item" href="https://photoshape.github.io">
+            PhotoShape
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav> -->
+
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title"><span style="color: #228be6;font-weight: bolder;">AGLLDiff</span> : Guiding Diffusion Models Towards Unsupervised Training-free Real-world Low-light Image Enhancement</h1>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <a href="https://lyl1015.github.io/">Yunlong Lin</a><sup>1</sup><sup>*</sup>,</span>
+              <span class="author-block">
+                <a href="https://owen718.github.io/">Tian Ye</a><sup>2</sup><sup>*</sup>,</span>
+              <span class="author-block">
+                <a href="https://ephemeral182.github.io/">Sixiang Chen</a><sup>2</sup><sup>*</sup>,</span>
+              <span class="author-block">
+                <a href="https://zhenqifu.github.io/">Zhenqi Fu</a><sup>4</sup>,</span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=fDVgLA0AAAAJ&hl=en">Yingying Wang</a><sup>1</sup>,</span>
+              <span class="author-block">
+                <a href="https://rese1f.github.io/">Wenhao Chai</a><sup>5</sup>,</span>
+              <span class="author-block">
+                <a href="https://ge-xing.github.io/">Zhaohu Xing</a><sup>2</sup>,</span>
+              <span class="author-block">
+                <a href="https://sites.google.com/site/indexlzhu/home/">Lei Zhu</a><sup>2,3</sup>,</span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=k5hVBfMAAAAJ&hl=zh-CN/">Xinghao Ding</a><sup>1</sup>,</span>
+              <span class="author-block">
+                <!-- <a href="https://express.adobe.com/page/CAdrFMJ9QeI2y/">Xinghao Ding</a><sup>1</sup> -->
+
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><sup>1</sup>Xiamen University, China</span>
+              <span class="author-block"><sup>2</sup>The Hong Kong University of Science and Technology (Guangzhou), China</span>
+              <span class="author-block"><sup>3</sup>The Hong Kong University of Science and Technology, Hong Kong SAR, China</span>
+              <span class="author-block"><sup>4</sup>Tsinghua University, China</span>
+              <span class="author-block"><sup>5</sup>University of Washington</span> <br>
+              <span class="author-block"><sup>*</sup>denotes equal contribution</span>
+            </div>
+            <!-- TODO: update paper and video link once upload -->
+            <div class="column has-text-centered">
+              <!-- <div class="publication-links"> -->
+                <!-- PDF Link. -->
+                <span class="link-block">
+                <a href="https://arxiv.org/pdf/2407.14900"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+                </span>
+                <span class="link-block">
+                <a href="https://arxiv.org/pdf/2407.14900"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+                <!-- Video Link. -->
+                <!-- <span class="link-block">
+                  <a href="https://youtu.be/470hul75bSM" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                    </span>
+                    <span>Video</span>
+                  </a>
+                </span> -->
+                <!-- Code Link. -->
+                <span class="link-block">
+                  <a href="https://github.com/VITA-Group/LightGaussian"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code</span>
+                  </a>
+                </span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/teaser.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        <span class="dnerf">Nerfies</span> turns selfie videos from your phone into
+        free-viewpoint
+        portraits.
+      </h2>
+    </div>
+  </div>
+</section> -->
+
+
+  <!-- <section class="hero is-light is-small">
+    <div class="hero-body">
+      <div class="container">
+        <div id="results-carousel" class=" carousel results-carousel">
+          <div class="item item-room">
+            <video poster="" id="room" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/room_video_comp3.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+  
+          <div class="item item-garden">
+            <video poster="" id="garden" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/garden_video_comp3.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-bicycle">
+            <video poster="" id="bicycle" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/bicycle_video_comp3.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-bonsai">
+            <video poster="" id="bonsai" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/bonsai_video_comp3.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-counter">
+            <video poster="" id="counter" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/counter_video_comp3.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-kitchen">
+            <video poster="" id="kitchen" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/kitchen_video_comp3.mp4" type="video/mp4">
+            </video>
+          </div>
+        <div class="item item-train">
+          <video poster="" id="train" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/train_video_comp3.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-struck">
+          <video poster="" id="toby" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/truck_video_comp3.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-stump">
+          <video poster="" id="stump" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/stump_video_comp3.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        </div>
+        <p>The caption displays both the file size and the Structural Similarity Index (SSIM)</p>
+      </div>
+    </div>
+  </section> -->
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <!-- Abstract. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Overview</h2>
+          <div class="content has-text-justified">
+            <img src="./static/images/intro.png">
+
+            <p>
+              Existing low-light image enhancement (LIE) methods have
+              achieved noteworthy success in solving synthetic distortions, yet they
+              often fall short in practical applications. The limitations arise from two
+              inherent challenges in real-world LIE: 1) the collection of distorted/clean
+              image pairs is often impractical and sometimes even unavailable, and 2)
+              accurately modeling complex degradations presents a non-trivial problem. 
+            </p>
+            <p>
+              To address the aforementioned challenges, we introduce a novel training-free and unsupervised framework, 
+              named <b>AGLLDiff</b>, for real-world low-light enhancement. In contrast to prior works that predefine the degradation
+               process, our approach models the desired attributes and incorporates this guidance within the
+              diffusion generative process. As shown in Fig. 1, noisy images are degradation-irrelevant 
+              conditions for the DM generative process. Adding extra gaussian noise makes the degradation less 
+              distinguishable compared with its corresponding reference distribution. Since diffusion prior can
+              serve as a natural image regularization, one could simply guide the sampling process with easily 
+              accessible attributes such as image exposure, structure and color of normal-light images.
+            </p>
+          
+            <p>
+              By constraining a reliable HQ solution space, the core of our philosophy is to bypass 
+              the difficulty of discerning the prior relationship between low-light and normal-light 
+              images, thus improving generalizability.
+            </p>
+
+          </div>
+        </div>
+      </div>
+      <!--/ Abstract. -->
+
+      <!-- Paper video. -->
+      <!-- <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Video</h2>
+          <div class="publication-video">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/470hul75bSM?si=7F9NL8zWbU9GtqHb"
+              title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; 
+           encrypted-media; " allowfullscreen></iframe>
+           
+          </div>
+        </div>
+      </div> -->
+    </div>
+  </section>
+
+
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <!-- Concurrent Work. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">Method</h2>
+          <div class="content has-text-justified">
+            <img src="./static/images/method.png">
+
+            <p>The overview of AGLLDiff is illustrated above. Given a degraded low-light image y0 in the wild domain, 
+              the diffusion forward process adds a few steps of slight Gaussian noise to the y0, aiming to narrow the 
+              distribution between the degraded image and its potential counterpart, i.e., the HQ image. After obtaining the noisy image 
+              xt, we implement the reverse generative process through a pre-trained diffusion denoiser and attribute 
+              guidance to generate the enhancement result x0. The inherent attributes of normal-light samples, such as
+               image exposure, structure and color, can be readily derived from their degraded counterparts. Further elaboration on the pivotal
+                components of our method, including attributes, classifiers, and targets, is provided in subsequent sections.</p>
+
+
+
+          </div>
+        </div>
+      </div>
+      <!--/ Concurrent Work. -->
+
+    </div>
+  </section>
+
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">Result</h2>
+          <div class="content has-text-justified">
+            <img src="./static/images/SICE.png">
+            <!-- <p>Result on SICE datasets</p> -->
+            <img src="./static/images/MEF.png">
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+  <section class="section">
+    <div class="container ">
+      <div class=" has-text-centered">
+        <h2 class="title is-3">Visual Comparisons</h2>
+        <div class="content has-text-justified">
+          <p>
+
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <!-- Visual Effects. -->
+          <div class="column">
+            <div class="content">
+              <div class="columns is-centered">
+                <div class="column is-full-width">
+                  <div id="example1" class="bal-container-small">
+
+                    <div class="bal-after">
+                      <img src="./static/images/15 (2).jpg">
+                      <div class="bal-afterPosition afterLabel" style="z-index:1;">
+                        Ours
+                      </div>
+                    </div>
+
+                    <div class="bal-before" style="width:50.4968152866242%;">
+                      <div class="bal-before-inset" style="width: 539px;">
+                        <img src="./static/images/15.jpg">
+                        <div class="bal-beforePosition beforeLabel">
+                          Input
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bal-handle" style="left:50.4968152866242%;">
+                      <span class=" handle-left-arrow"></span>
+                      <span class="handle-right-arrow"></span>
+                    </div>
+
+                  </div>
+
+
+                  <div id="example2" class="bal-container-small">
+
+                    <div class="bal-after">
+                      <img src="./static/images/17.jpg">
+                      <div class="bal-afterPosition afterLabel">
+                        Ours
+                      </div>
+                    </div>
+
+                    <div class="bal-before" style="width: 50%;">
+                      <div class="bal-before-inset" style="width: 539px;">
+                        <img src="./static/images/17 (1).jpg">
+                        <div class="bal-beforePosition beforeLabel">
+                          Input
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bal-handle" style="left: 50%;">
+                      <span class=" handle-left-arrow"></span>
+                      <span class="handle-right-arrow"></span>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!--/ Visual Effects. -->
+
+          <!-- Matting. -->
+          <div class="column">
+            <div class="columns is-centered">
+              <div class="column content">
+
+                <div id="example4" class="bal-container-small">
+                  <div class="bal-after">
+                    <img src="./static/images/1 (1).jpg">
+                    <div class="bal-afterPosition afterLabel" style="z-index:1;">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before" style="width:62.10191082802548%;">
+                    <div class="bal-before-inset" style="width: 539px;">
+                      <img src="./static/images/1.jpg">
+                      <div class="bal-beforePosition beforeLabel">
+                        Input
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle" style="left:62.10191082802548%;">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example5" class="bal-container-small">
+                  <div class="bal-after">
+                    <img src="./static/images/13 (1).jpg">
+                    <div class="bal-afterPosition afterLabel" style="z-index:1;">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before" style="width:56.77179962894249%;">
+                    <div class="bal-before-inset" style="width: 628px;">
+                      <img src="./static/images/13.jpg">
+                      <div class="bal-beforePosition beforeLabel">
+                        Input
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle" style="left:56.77179962894249%;">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    new BeforeAfter({
+      id: '#example1'
+    });
+    new BeforeAfter({
+      id: '#example2'
+    });
+    new BeforeAfter({
+      id: '#example4'
+    });
+    new BeforeAfter({
+      id: '#example5'
+    });
+
+  </script>
+
+  <!-- 
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Related Links</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            Needs update
+          </p>
+         
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section> -->
+
+  
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@misc{fan2023lightgaussian,
+  author    = {Zhiwen Fan and Kevin Wang and Kairun Wen and Zehao Zhu and Dejia Xu and Zhangyang Wang},
+  title     = {LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS},
+  year      ={2023}, 
+  eprint    ={2311.17245}, 
+  archivePrefix={arXiv}, 
+  primaryClass={cs.CV},
+}</code></pre>
+  </div>
+</section>
+
+  <!-- TODO: update the arxiv link and github -->
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <a class="icon-link" href="https://arxiv.org/pdf/2311.17245.pdf">
+          <i class="fas fa-file-pdf"></i>
+        </a>
+        <a class="icon-link" href="https://github.com/VITA-Group/LightGaussian" class="external-link" disabled>
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the template of this website.
+              <!-- This website is licensed under a <a rel="license"
+                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+                Commons Attribution-ShareAlike 4.0 International License</a>. -->
+            </p>
+            <p>
+              <!-- This means you are free to borrow the <a href="https://github.com/nerfies/nerfies.github.io">source
+                code</a> of this website,
+              we just ask that you link back to this page in the footer.
+              Please remember to remove the analytics code included in the header of the website which
+              you do not want on your website. -->
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>
